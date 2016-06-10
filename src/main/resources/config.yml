@@ -1,0 +1,7 @@
+blockedCommands:
+- version
+- ver
+- plugins
+- pl
+- help
+- "?"
