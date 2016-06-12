@@ -1,6 +1,7 @@
 blockedCommands:
 - version
 - ver
+- about
 - plugins
 - pl
 - help
