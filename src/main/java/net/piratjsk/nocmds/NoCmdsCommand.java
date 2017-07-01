@@ -9,7 +9,7 @@ import static net.piratjsk.nocmds.Utils.colorize;
 final class NoCmdsCommand implements CommandExecutor {
 
     private final NoCmds nocmds;
-    private static final String TAG = "&f[&3No&bCmds&f] ";
+    private static final String TAG = "&f[&cNo&8Cmds&f] ";
 
     NoCmdsCommand(final NoCmds plugin) {
         this.nocmds = plugin;
