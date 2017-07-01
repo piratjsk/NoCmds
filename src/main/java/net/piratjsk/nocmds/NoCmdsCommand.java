@@ -67,8 +67,8 @@ final class NoCmdsCommand implements CommandExecutor {
             sender.sendMessage(colorize(TAG + "Available commands:"));
             sender.sendMessage(colorize(" &8/&fnocmds reload - &7reloads plugin config"));
             sender.sendMessage(colorize(" &8/&fnocmds list - &7lists blocked commands"));
-            sender.sendMessage(colorize(" &8/&fnocmds block &8<&fcmd&8> &7[cmd] [...] &r- &7blocks given commands(s)"));
-            sender.sendMessage(colorize(" &8/&fnocmds unblock &8<&fcmd&8> &7[cmd] [...] &r- &7unblocks given commands(s)"));
+            sender.sendMessage(colorize(" &8/&fnocmds block &8<&fcmd&8> &7[cmd] [...] &r- &7blocks given command(s)"));
+            sender.sendMessage(colorize(" &8/&fnocmds unblock &8<&fcmd&8> &7[cmd] [...] &r- &7unblocks given command(s)"));
             return true;
         }
         sender.sendMessage(this.nocmds.getUnknownCommandMessage());
