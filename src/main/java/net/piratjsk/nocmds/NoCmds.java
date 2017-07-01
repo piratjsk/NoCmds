@@ -1,5 +1,6 @@
 package net.piratjsk.nocmds;
 
+import net.piratjsk.nocmds.listeners.ConsoleCommandListener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import net.piratjsk.nocmds.listeners.TabCompleteListener;
@@ -27,6 +28,7 @@ public final class NoCmds extends JavaPlugin {
         }
 
         this.getServer().getPluginManager().registerEvents(new PlayerCommandListener(this), this);
+        this.getServer().getPluginManager().registerEvents(new ConsoleCommandListener(this), this);
 
         this.setupUnknownCmdMsg();
 

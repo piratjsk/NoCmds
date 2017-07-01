@@ -1,13 +1,13 @@
 package net.piratjsk.nocmds.listeners;
 
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
 import net.piratjsk.nocmds.NoCmds;
 import static net.piratjsk.nocmds.Utils.isSpigotConfigSupported;
+import static net.piratjsk.nocmds.Utils.commandExists;
+import static net.piratjsk.nocmds.Utils.sendMsg;
 
 public final class PlayerCommandListener implements Listener {
 
@@ -38,19 +38,6 @@ public final class PlayerCommandListener implements Listener {
             sendMsg(this.nocmds.getUnknownCommandMessage(), cmd, event.getPlayer());
         }
 
-    }
-
-    private static boolean commandExists(final String command) {
-        final String cmd = command.split(" ")[0];
-        return Bukkit.getHelpMap().getHelpTopic(cmd) != null;
-    }
-
-    private static void sendMsg(final String message, final String command, final Player player) {
-        player.sendMessage(message
-                .replaceAll("(%name%|%player%)",player.getName())
-                .replaceAll("%displayname%",player.getDisplayName())
-                .replaceAll("%command%",command)
-        );
     }
 
 }
