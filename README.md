@@ -6,7 +6,7 @@
 `nocmds.admin` - Gives access to 'nocmds' command.
 
 ### Commands
-`/nocmds` - Prints list of available commands.
+`/nocmds` - Prints list of available commands.  
 `/nocmds reload` - Reloads plugin configuration.  
 `/nocmds list` - Prints blocked commands.  
 `/nocmds block <cmd> [cmd] [...]` - Block given command(s).  
