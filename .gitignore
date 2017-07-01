@@ -1,4 +1,4 @@
-libs/
-target/
-.idea/
-NoCmds.iml
+.*
+!.gitignore
+build
+*.iml
