@@ -1,92 +1,73 @@
 package net.piratjsk.nocmds;
 
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.server.TabCompleteEvent;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.spigotmc.SpigotConfig;
 
+import net.piratjsk.nocmds.listeners.TabCompleteListener;
+import net.piratjsk.nocmds.listeners.PlayerCommandListener;
+
+import static net.piratjsk.nocmds.Utils.*;
+
+import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
-public final class NoCmds extends JavaPlugin implements Listener {
+public final class NoCmds extends JavaPlugin {
 
-    private List<String> blockedCommands;
+    private Collection<String> blockedCommands;
+    private String unknownCmdMsg;
 
     @Override
     public void onEnable() {
         this.saveDefaultConfig();
         this.blockedCommands = this.getConfig().getStringList("blockedCommands");
 
-        this.getServer().getPluginManager().registerEvents(this, this);
-        this.getCommand("nocmds").setExecutor(this);
+        if (isTabCompleteEventSupported()) {
+            this.getServer().getPluginManager().registerEvents(new TabCompleteListener(this), this);
+        }
+
+        if (isPlayerCommandPreprocessEventSupported()) {
+            this.getServer().getPluginManager().registerEvents(new PlayerCommandListener(this), this);
+        }
+
+        if (isSpigotConfigSupported()) {
+            try {
+                final Field field = Class.forName("org.spigotmc.SpigotConfig").getDeclaredField("unknownCommandMessage");
+                this.unknownCmdMsg = (String) field.get("");
+            } catch (final NoSuchFieldException | ClassNotFoundException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+
+        this.getCommand("nocmds").setExecutor(new NoCmdsCommand(this));
     }
 
     @Override
-    public boolean onCommand(final CommandSender sender, final Command cmd, final String label, final String[] args) {
-        if (sender.hasPermission("nocmds.admin")) {
-            if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
-                this.reloadConfig();
-                this.blockedCommands = this.getConfig().getStringList("blockedCommands");
-                sender.sendMessage("[NoCmds] Configuration was reloaded.");
-                return true;
-            }
-            if (args.length == 1 && args[0].equalsIgnoreCase("list")) {
-                sender.sendMessage("[NoCmds] blockedCommands:");
-                for (String command : blockedCommands)
-                    sender.sendMessage(" "+command);
-                return true;
-            }
-        }
-        sender.sendMessage("[NoCmds] :)");
-        return true;
+    public void reloadConfig() {
+        super.reloadConfig();
+        this.blockedCommands = this.getConfig().getStringList("blockedCommands");
     }
 
-    @EventHandler
-    public void onCommand(final PlayerCommandPreprocessEvent event) {
-        if (event.getPlayer().hasPermission("nocmds.bypass")) return;
-        final String cmd = event.getMessage().split(" ")[0];
-        boolean blocked = false;
+    public boolean isBlocked(final String command) {
+        // strip all arguments
+        final String cmd = command.split(" ")[0];
         for (final String blockedCmd : this.blockedCommands) {
-            if (blockedCmd.startsWith("/") && cmd.equalsIgnoreCase(blockedCmd)) {
-                blocked = true;
-                break;
-            } else {
-                if (cmd.contains(":") && cmd.split(":")[1].equalsIgnoreCase(blockedCmd)) {
-                    blocked = true;
-                    break;
-                } else if (cmd.equalsIgnoreCase("/"+blockedCmd)) {
-                    blocked = true;
-                    break;
-                }
-            }
+            // exact match
+            if (cmd.equalsIgnoreCase(blockedCmd)) return true;
+
+            // with prefix
+            if (cmd.contains(":") && cmd.split(":")[1].equalsIgnoreCase(blockedCmd)) return true;
+            // without prefix
+            if (cmd.equalsIgnoreCase("/"+blockedCmd)) return true;
         }
-        if (blocked) {
-            event.setCancelled(true);
-            event.getPlayer().sendMessage(SpigotConfig.unknownCommandMessage);
-        }
+        return false;
     }
 
-    @EventHandler
-    public void onCommandTabComplete(final TabCompleteEvent event) {
-        if (event.getSender().hasPermission("nocmds.bypass")) return;
-        final ArrayList<String> completions = new ArrayList<String>(event.getCompletions());
-        for (final String cmplt : (ArrayList<String>)completions.clone()) {
-            for (final String blockedCmd : this.blockedCommands) {
-                if (blockedCmd.startsWith("/")) {
-                    if (cmplt.equalsIgnoreCase(blockedCmd)) completions.remove(cmplt);
-                } else {
-                    if (cmplt.contains(":") && cmplt.split(":")[1].equalsIgnoreCase(blockedCmd))
-                        completions.remove(cmplt);
-                    else if (cmplt.equalsIgnoreCase("/" + blockedCmd))
-                        completions.remove(cmplt);
-                }
-            }
-        }
-        event.setCompletions(completions);
+    public String getUnknownCommandMessage() {
+        return this.unknownCmdMsg;
+    }
+
+    public Collection<String> getBlockedCommands() {
+        return this.blockedCommands;
     }
 
 }
