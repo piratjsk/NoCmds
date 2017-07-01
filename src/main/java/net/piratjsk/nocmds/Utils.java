@@ -2,8 +2,11 @@ package net.piratjsk.nocmds;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import java.lang.reflect.Field;
 
 public class Utils {
 
@@ -15,7 +18,7 @@ public class Utils {
         return classExist("org.spigotmc.SpigotConfig");
     }
 
-    private static boolean classExist(final String clazz) {
+    public static boolean classExist(final String clazz) {
         try {
             Class.forName(clazz);
             return true;
@@ -29,8 +32,16 @@ public class Utils {
     }
 
     public static boolean commandExists(final String command) {
-        final String cmd = command.split(" ")[0];
-        return Bukkit.getHelpMap().getHelpTopic(cmd) != null;
+        final String cmd = command.split(" ")[0].replaceFirst("/","");
+        try {
+            final Field field = Bukkit.getServer().getClass().getDeclaredField("commandMap");
+            field.setAccessible(true);
+            final CommandMap cmdMap = (CommandMap) field.get(Bukkit.getServer());
+            return cmdMap.getCommand(cmd) != null;
+        } catch (final NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return true;
     }
 
     public static void sendMsg(String message, final String command, final CommandSender sender) {
