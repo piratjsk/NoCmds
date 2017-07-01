@@ -8,10 +8,6 @@ public class Utils {
         return classExist("org.bukkit.event.server.TabCompleteEvent");
     }
 
-    public static boolean isPlayerCommandPreprocessEventSupported() {
-        return classExist("org.bukkit.event.player.PlayerCommandPreprocessEvent");
-    }
-
     public static boolean isSpigotConfigSupported() {
         return classExist("org.spigotmc.SpigotConfig");
     }

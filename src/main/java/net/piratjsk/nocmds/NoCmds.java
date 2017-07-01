@@ -22,11 +22,11 @@ public final class NoCmds extends JavaPlugin {
 
         if (isTabCompleteEventSupported()) {
             this.getServer().getPluginManager().registerEvents(new TabCompleteListener(this), this);
+        } else {
+            this.getLogger().info("Looks like your server doesn't support TabCompleteEvent, therefore we can't hide blocked commands from tab completions.");
         }
 
-        if (isPlayerCommandPreprocessEventSupported()) {
-            this.getServer().getPluginManager().registerEvents(new PlayerCommandListener(this), this);
-        }
+        this.getServer().getPluginManager().registerEvents(new PlayerCommandListener(this), this);
 
         this.setupUnknownCmdMsg();
 
