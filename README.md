@@ -8,8 +8,8 @@
 ### Commands
 `/nocmds` - Prints list of available commands.
 `/nocmds reload` - Reloads plugin configuration.  
-`/nocmds list` - Prints blocked commands.
-`/nocmds block <cmd> [cmd] [...]` - Block given command(s).
+`/nocmds list` - Prints blocked commands.  
+`/nocmds block <cmd> [cmd] [...]` - Block given command(s).  
 `/nocmds unblock <cmd> [cmd] [...]` - Unblock given command(s).
 
 ### Usage
