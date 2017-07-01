@@ -1,7 +1,6 @@
 package net.piratjsk.nocmds;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Server;
+import org.bukkit.ChatColor;
 
 public class Utils {
 
@@ -24,6 +23,10 @@ public class Utils {
         } catch (final ClassNotFoundException e) {
             return false;
         }
+    }
+
+    public static String colorize(final String uncoloredString) {
+        return ChatColor.translateAlternateColorCodes('&', uncoloredString);
     }
 
 }

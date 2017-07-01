@@ -1,3 +1,6 @@
+# used when SpigotConfig is not available (e.g. your server is running Craftbukkit)
+unknownCommandMessage: "Unknown command. Type \"/help\" for help."
+
 blockedCommands:
 - version
 - ver

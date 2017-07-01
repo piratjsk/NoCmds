@@ -19,9 +19,9 @@ public final class TabCompleteListener implements Listener {
     @EventHandler
     public void onCommandTabComplete(final TabCompleteEvent event) {
         if (event.getSender().hasPermission("nocmds.bypass")) return;
-
-        final ArrayList<String> completions = new ArrayList<String>(event.getCompletions());
-        for (final String cmplt : completions) {
+        event.getCompletions().toArray(new String[0]).clone();
+        final ArrayList<String> completions = new ArrayList<>(event.getCompletions());
+        for (final String cmplt : (ArrayList<String>)completions.clone()) {
             if (this.nocmds.isBlocked(cmplt)) {
                 completions.remove(cmplt);
             }
