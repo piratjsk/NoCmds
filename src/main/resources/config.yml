@@ -1,5 +1,12 @@
 # used when SpigotConfig is not available (e.g. your server is running Craftbukkit)
+# you can use in this message a few variables:
+# - %name% and %displayname% for name and display name of player
+# - %command% for command issued by player
 unknownCommandMessage: "Unknown command. Type \"/help\" for help."
+
+# since unknown command message set in spigot.yml doesn't not allow use of those handy variables
+# some might want to use this config instead of spigot one
+ignoreSpigotConfig: false
 
 blockedCommands:
 - version

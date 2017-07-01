@@ -34,7 +34,7 @@ public final class NoCmds extends JavaPlugin {
     }
 
     private void setupUnknownCmdMsg() {
-        if (isSpigotConfigSupported()) {
+        if (isSpigotConfigSupported() && !this.getConfig().getBoolean("ignoreSpigotConfig")) {
             try {
                 final Field field = Class.forName("org.spigotmc.SpigotConfig").getDeclaredField("unknownCommandMessage");
                 this.unknownCmdMsg = colorize((String) field.get(""));
