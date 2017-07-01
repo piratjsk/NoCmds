@@ -3,12 +3,14 @@
 
 ### Permissions
 `nocmds.bypass` - Allows to use blocked commands.  
-`nocmds.admin` - Gives access to 'nocmds reload' and 'nocmds list' commands.
+`nocmds.admin` - Gives access to 'nocmds' command.
 
 ### Commands
-`/nocmds` - Prints useless line of text.  
+`/nocmds` - Prints list of available commands.
 `/nocmds reload` - Reloads plugin configuration.  
 `/nocmds list` - Prints blocked commands.
+`/nocmds block <cmd> [cmd] [...]` - Block given command(s).
+`/nocmds unblock <cmd> [cmd] [...]` - Unblock given command(s).
 
 ### Usage
 Just add commands you want to block to `config.yml` as next items of `blockedCommands` list.  

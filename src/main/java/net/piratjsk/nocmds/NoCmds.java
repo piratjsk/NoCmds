@@ -54,6 +54,11 @@ public final class NoCmds extends JavaPlugin {
         this.setupUnknownCmdMsg();
     }
 
+    public void saveConfig() {
+        this.getConfig().set("blockedCommands",blockedCommands);
+        super.saveConfig();
+    }
+
     public boolean isBlocked(final String command) {
         // strip all arguments
         final String cmd = command.split(" ")[0];
@@ -75,6 +80,14 @@ public final class NoCmds extends JavaPlugin {
 
     public Collection<String> getBlockedCommands() {
         return this.blockedCommands;
+    }
+
+    public void blockCmd(final String command) {
+        this.blockedCommands.add(command);
+    }
+
+    public void unblockCmd(final String command) {
+        this.blockedCommands.remove(command);
     }
 
 }
