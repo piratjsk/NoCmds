@@ -22,3 +22,7 @@ processResources {
     filter ReplaceTokens, tokens: [version: version, name: rootProject.name]
   }
 }
+
+jar {
+  from "LICENSE"
+}
