@@ -28,13 +28,7 @@ public final class NoCmds extends JavaPlugin {
         }
 
         this.getServer().getPluginManager().registerEvents(new PlayerCommandListener(this), this);
-
-        // right now glowstone doesn't allow to cancel ServerCommandEvent (neither modify unknown cmd msg)
-        // so there's no point in canceling it when command is unknown and displaying custom msg
-        // because default message will be still displayed
-        if (!classExist("net.glowstone.GlowServer")) {
-            this.getServer().getPluginManager().registerEvents(new ConsoleCommandListener(this), this);
-        }
+        this.getServer().getPluginManager().registerEvents(new ConsoleCommandListener(this), this);
 
         this.setupUnknownCmdMsg();
 
