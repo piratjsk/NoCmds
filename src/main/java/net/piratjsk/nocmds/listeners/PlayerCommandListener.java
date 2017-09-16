@@ -19,23 +19,24 @@ public final class PlayerCommandListener implements Listener {
 
     @EventHandler
     public void onPlayerCommand(final PlayerCommandPreprocessEvent event) {
-        if (event.getPlayer().hasPermission("nocmds.bypass")) return;
+        if (event.getPlayer().hasPermission("nocmds.bypass"))
+            return;
 
         final String cmd = event.getMessage().split(" ")[0];
 
         // handle blocked commands
-        if (this.nocmds.isBlocked(event.getMessage())) {
+        if (nocmds.isBlocked(event.getMessage())) {
             event.setCancelled(true);
-            sendMsg(this.nocmds.getUnknownCommandMessage(), cmd, event.getPlayer());
+            sendMsg(nocmds.getUnknownCmdMsgTemplate(), cmd, event.getPlayer());
             return;
         }
 
         // handle unknown commands
         if (!commandExists(event.getMessage())) {
-            if (isSpigotConfigSupported() && !this.nocmds.getConfig().getBoolean("ignoreSpigotConfig"))
+            if (isSpigotConfigSupported() && !nocmds.shouldIgnoreSpigotConfig())
                 return;
             event.setCancelled(true);
-            sendMsg(this.nocmds.getUnknownCommandMessage(), cmd, event.getPlayer());
+            sendMsg(nocmds.getUnknownCmdMsgTemplate(), cmd, event.getPlayer());
         }
 
     }

@@ -45,14 +45,15 @@ public class Utils {
     }
 
     public static void sendMsg(String message, final String command, final CommandSender sender) {
-        message = message
-                .replaceAll("(%name%|%player%)", sender.getName())
-                .replaceAll("%command%", command);
-        if (sender instanceof Player)
-            message = message.replaceAll("%displayname%", ((Player) sender).getDisplayName());
-        else
-            message = message.replaceAll("%displayname%", sender.getName());
-
+        if (message.contains("%")) {
+            message = message
+                    .replaceAll("%name%", sender.getName())
+                    .replaceAll("%command%", command);
+            if (sender instanceof Player)
+                message = message.replaceAll("%displayname%", ((Player) sender).getDisplayName());
+            else
+                message = message.replaceAll("%displayname%", sender.getName());
+        }
         sender.sendMessage(message);
     }
 

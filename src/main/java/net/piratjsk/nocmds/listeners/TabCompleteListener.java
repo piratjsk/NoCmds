@@ -6,7 +6,8 @@ import org.bukkit.event.server.TabCompleteEvent;
 
 import net.piratjsk.nocmds.NoCmds;
 
-import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public final class TabCompleteListener implements Listener {
 
@@ -18,16 +19,16 @@ public final class TabCompleteListener implements Listener {
 
     @EventHandler
     public void onCommandTabComplete(final TabCompleteEvent event) {
-        if (event.getSender().hasPermission("nocmds.bypass")) return;
-        event.getCompletions().toArray(new String[0]).clone();
-        final ArrayList<String> completions = new ArrayList<>(event.getCompletions());
-        for (final String cmplt : (ArrayList<String>)completions.clone()) {
-            if (this.nocmds.isBlocked(cmplt)) {
-                completions.remove(cmplt);
-            }
-        }
-        event.setCompletions(completions);
+        if (event.getSender().hasPermission("nocmds.bypass"))
+            return;
+        event.setCompletions(filterCompletions(event.getCompletions()));
+    }
 
+    private List<String> filterCompletions(final List<String> completions) {
+        return completions
+                .stream()
+                .filter(nocmds::isBlocked)
+                .collect(Collectors.toList());
     }
 
 }

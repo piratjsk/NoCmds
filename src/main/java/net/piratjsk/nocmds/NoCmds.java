@@ -1,6 +1,7 @@
 package net.piratjsk.nocmds;
 
 import net.piratjsk.nocmds.listeners.ConsoleCommandListener;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import net.piratjsk.nocmds.listeners.TabCompleteListener;
@@ -9,87 +10,121 @@ import net.piratjsk.nocmds.listeners.PlayerCommandListener;
 import static net.piratjsk.nocmds.Utils.*;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Collection;
 
 public final class NoCmds extends JavaPlugin {
 
-    private Collection<String> blockedCommands;
-    private String unknownCmdMsg;
+    private final Collection<Rule> blockingRules = new ArrayList<>();
+    private String unknownCmdMsgTemplate;
 
     @Override
     public void onEnable() {
-        this.saveDefaultConfig();
-        this.blockedCommands = this.getConfig().getStringList("blockedCommands");
-
-        if (isTabCompleteEventSupported()) {
-            this.getServer().getPluginManager().registerEvents(new TabCompleteListener(this), this);
-        } else {
-            this.getLogger().info("Looks like your server doesn't support TabCompleteEvent, therefore we can't hide blocked commands from tab completions.");
-        }
-
-        this.getServer().getPluginManager().registerEvents(new PlayerCommandListener(this), this);
-        this.getServer().getPluginManager().registerEvents(new ConsoleCommandListener(this), this);
-
-        this.setupUnknownCmdMsg();
-
-        this.getCommand("nocmds").setExecutor(new NoCmdsCommand(this));
+        setupConfig();
+        registerEvents();
+        setupCommand();
     }
 
-    private void setupUnknownCmdMsg() {
-        if (isSpigotConfigSupported() && !this.getConfig().getBoolean("ignoreSpigotConfig")) {
+    private void setupConfig() {
+        saveDefaultConfig();
+        setupBlockingRules();
+        setupUnknownCmdMsgTemplate();
+    }
+
+    private void setupBlockingRules() {
+        for (final String rule : this.getConfig().getStringList("blockedCommands"))
+            blockingRules.add(new Rule(rule));
+    }
+
+    private void setupUnknownCmdMsgTemplate() {
+        if (isSpigotConfigSupported() && !shouldIgnoreSpigotConfig()) {
             try {
                 final Field field = Class.forName("org.spigotmc.SpigotConfig").getDeclaredField("unknownCommandMessage");
-                this.unknownCmdMsg = colorize((String) field.get(""));
+                unknownCmdMsgTemplate = colorize((String) field.get(""));
             } catch (final NoSuchFieldException | ClassNotFoundException | IllegalAccessException e) {
                 e.printStackTrace();
-                this.unknownCmdMsg = colorize(this.getConfig().getString("unknownCommandMessage"));
+                getLogger().warning("Something went wrong when trying to get unknown command message from spigot config, message from NoCmds config will be used instead.");
+                unknownCmdMsgTemplate = colorize(getConfig().getString("unknownCommandMessage"));
             }
         } else {
-            this.unknownCmdMsg = colorize(this.getConfig().getString("unknownCommandMessage"));
+            unknownCmdMsgTemplate = colorize(getConfig().getString("unknownCommandMessage"));
         }
+    }
+
+    public boolean shouldIgnoreSpigotConfig() {
+        return getConfig().getBoolean("ignoreSpigotConfig");
+    }
+
+    private void registerEvents() {
+        registerEvent(new PlayerCommandListener(this));
+
+        if (isTabCompleteEventSupported())
+            registerEvent(new TabCompleteListener(this));
+        else
+            getLogger().info("Looks like your server doesn't support TabCompleteEvent, therefore we can't hide blocked commands from tab completions.");
+
+        registerEvent(new ConsoleCommandListener(this));
+    }
+
+    private void registerEvent(final Listener eventListener) {
+        getServer().getPluginManager().registerEvents(eventListener, this);
+    }
+
+    private void setupCommand() {
+        getCommand("nocmds").setExecutor(new NoCmdsCommand(this));
     }
 
     @Override
     public void reloadConfig() {
         super.reloadConfig();
-        this.blockedCommands = this.getConfig().getStringList("blockedCommands");
-        this.setupUnknownCmdMsg();
+        setupBlockingRules();
+        setupUnknownCmdMsgTemplate();
     }
 
+    @Override
     public void saveConfig() {
-        this.getConfig().set("blockedCommands",blockedCommands);
+        final String[] rules = blockingRules.stream().map(Rule::toString).toArray(String[]::new);
+        getConfig().set("blockedCommands", rules);
         super.saveConfig();
     }
 
     public boolean isBlocked(final String command) {
         // strip all arguments
         final String cmd = command.split(" ")[0];
-        for (final String blockedCmd : this.blockedCommands) {
-            // exact match
-            if (cmd.equalsIgnoreCase(blockedCmd)) return true;
+        return isMatchingAnyRule(cmd);
+    }
 
-            // with prefix
-            if (cmd.contains(":") && cmd.split(":")[1].equalsIgnoreCase(blockedCmd)) return true;
-            // without prefix
-            if (cmd.equalsIgnoreCase("/"+blockedCmd)) return true;
+    private boolean isMatchingAnyRule(final String command) {
+        for (final Rule rule : blockingRules) {
+            if (rule.isMatching(command))
+                return true;
         }
         return false;
+
     }
 
-    public String getUnknownCommandMessage() {
-        return this.unknownCmdMsg;
+    public String getUnknownCmdMsgTemplate() {
+        return unknownCmdMsgTemplate;
     }
 
-    public Collection<String> getBlockedCommands() {
-        return this.blockedCommands;
+    public Collection<Rule> getBlockingRules() {
+        return blockingRules;
     }
 
     public void blockCmd(final String command) {
-        this.blockedCommands.add(command);
+        addRule(new Rule(command));
+    }
+
+    public void addRule(final Rule rule) {
+        blockingRules.add(rule);
     }
 
     public void unblockCmd(final String command) {
-        this.blockedCommands.remove(command);
+        removeRule(new Rule(command));
+    }
+
+    public void removeRule(final Rule rule) {
+        blockingRules.remove(rule);
     }
 
 }

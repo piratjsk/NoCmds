@@ -19,12 +19,12 @@ public class ConsoleCommandListener implements Listener {
 
     @EventHandler
     public void onConsoleCommand(final ServerCommandEvent event) {
-        if (isSpigotConfigSupported() && !this.nocmds.getConfig().getBoolean("ignoreSpigotConfig"))
+        if (isSpigotConfigSupported() && !nocmds.shouldIgnoreSpigotConfig())
             return;
 
         if (!commandExists(event.getCommand())) {
             event.setCancelled(true);
-            sendMsg(this.nocmds.getUnknownCommandMessage(), event.getCommand().split(" ")[0], event.getSender());
+            sendMsg(nocmds.getUnknownCmdMsgTemplate(), event.getCommand().split(" ")[0], event.getSender());
         }
     }
 
