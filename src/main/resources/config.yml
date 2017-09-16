@@ -1,13 +1,25 @@
-# used when SpigotConfig is not available (e.g. your server is running Craftbukkit)
+# used when SpigotConfig is not available (e.g. your server is running Craftbukkit or Glowstone)
 # you can use in this message a few variables:
 # - %name% and %displayname% for name and display name of player
 # - %command% for command issued by player
+# and colors (https://minecraft.gamepedia.com/Formatting_codes)
+# color codes can be prefixed with '&' (ampersand) instead of '§' (section sign)
 unknownCommandMessage: "Unknown command. Type \"/help\" for help."
 
 # since unknown command message set in spigot.yml doesn't not allow use of those handy variables
 # some might want to use this config instead of spigot one
 ignoreSpigotConfig: false
 
+# commands not prefixed with '/' (forward slash) will be blocked also when used with any prefix
+# for example the following configuration:
+# ```
+#   blockedCommands:
+#   - version
+#   - /ver
+# ```
+# would block all usages of 'version' command (/version, /bukkit:version, /<any_prefix>:version)
+# but 'ver' command would be blocked only when used without any prefixes (/ver),
+# '/bukkit:ver' or '/<any_prefix>:ver' could still be used
 blockedCommands:
 - version
 - ver
