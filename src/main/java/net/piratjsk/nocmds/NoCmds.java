@@ -96,7 +96,7 @@ public final class NoCmds extends JavaPlugin {
 
     private boolean isMatchingAnyRule(final String command) {
         for (final Rule rule : blockingRules) {
-            if (rule.isMatching(command))
+            if (rule.matches(command))
                 return true;
         }
         return false;

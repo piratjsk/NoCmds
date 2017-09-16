@@ -14,7 +14,7 @@ public class Rule {
         return strict;
     }
 
-    public boolean isMatching(final String command) {
+    public boolean matches(final String command) {
         if (command.equalsIgnoreCase(this.rule))
             return true;
         else if (isStrict())
